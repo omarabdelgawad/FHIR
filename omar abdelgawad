@@ -1,0 +1,52 @@
+import requests
+import json
+
+# Base URL of the FHIR server
+BASE_URL = "http://your-fhir-server-url.com"
+
+def fetch_all_patients():
+    """Retrieve all patients from the FHIR server."""
+    response = requests.get(f"{BASE_URL}/Patient")
+    return response.json()
+
+def create_patient(patient_info):
+    """Create a new patient on the FHIR server."""
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(f"{BASE_URL}/Patient", headers=headers, data=json.dumps(patient_info))
+    return response.json()
+
+def find_patient_by_name(name):
+    """Search for a patient by name on the FHIR server."""
+    response = requests.get(f"{BASE_URL}/Patient", params={"name": name})
+    return response.json()
+
+def remove_patient(patient_id):
+    """Delete a patient from the FHIR server using their ID."""
+    response = requests.delete(f"{BASE_URL}/Patient/{patient_id}")
+    return response.status_code
+
+# Example usage
+if __name__ == "__main__":
+    # Fetch and display all patients
+    patients = fetch_all_patients()
+    print("Patients List:", patients)
+
+    # Define new patient data
+    patient_data = {
+        "resourceType": "Patient",
+        "name": [{"given": ["John"], "family": "Doe"}]
+    }
+
+    # Add a new patient and display the result
+    new_patient = create_patient(patient_data)
+    print("New Patient Added:", new_patient)
+
+    # Search for patients with the last name "Doe"
+    search_query = "Doe"
+    search_results = find_patient_by_name(search_query)
+    print(f"Search Results for '{search_query}':", search_results)
+
+    # Delete a patient by ID and display the status code
+    patient_id = "12345"  # Replace with actual patient ID
+    delete_status = remove_patient(patient_id)
+    print("Patient Deletion Status Code:", delete_status)
